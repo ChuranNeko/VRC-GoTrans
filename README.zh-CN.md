@@ -1,25 +1,26 @@
 # VRC-GoTrans
 
-**[简体中文](README.zh-CN.md) | [English](README.md) | [日本語](README.ja.md)**
+**[简体中文](README.zh-CN.md) | [English](README.md) | [日本語](README.ja.md) | [한국어](README.ko.md)**
 
 ---
 
 <div align="center">
-  <img src="src/assets/logo.svg" width="128" height="128" alt="VRC-GoTrans Logo">
+  <img src="public/logo.svg" width="128" height="128" alt="VRC-GoTrans Logo">
   <h3>VRChat 实时翻译助手</h3>
-  <p>用即时语音互译打破虚拟现实中的语言隔阂</p>
+  <p>用即时翻译打破虚拟现实中的语言隔阂</p>
 </div>
 
 ---
 
 ## ✨ 功能特性
 
-- 🎤 **语音识别** —— 本地 Whisper STT，保护隐私的语音转文字
-- 🌐 **多语言翻译** —— 由腾讯 HY-MT1.5（离线）或在线 API 驱动
-- 💬 **VRChat 集成** —— 通过 OSC 直接把译文发送到游戏内聊天框
-- 🔒 **隐私优先** —— 全流程可 100% 离线运行，数据不出本机
-- ⚡ **低延迟** —— 优化的处理管线，接近实时翻译
-- 🎨 **现代界面** —— 基于 React + Radix UI 的简洁、易用界面
+- 🌐 **多语言翻译** —— 腾讯 HY-MT1.5 离线驱动，支持 38 种语言；亦可接在线 API
+- 💬 **VRChat 集成** —— 通过 OSC 把译文发送到游戏内聊天框
+- 🔒 **隐私优先** —— 本地翻译 100% 离线，数据不出本机
+- ⚡ **低延迟** —— CPU 模式每条 0.3-0.5 秒（模型加载约 1.5 秒）
+- 🎨 **现代界面** —— React + Radix UI 简洁易用
+- 🌍 **多语言界面** —— 简体中文 / English / 日本語 / 한국어
+- 🚧 **语音识别** —— faster-whisper 集成开发中
 
 ## 🚀 快速开始
 
@@ -38,109 +39,90 @@
 **方式二：从源码构建**
 
 ```bash
-# 克隆仓库
 git clone https://github.com/ChuranNeko/VRC-GoTrans.git
 cd VRC-GoTrans
-
-# 安装依赖
 pnpm install
-
-# 开发模式运行
-pnpm tauri dev
-
-# 构建生产版本
-pnpm tauri build
+pnpm tauri dev      # 开发模式
+pnpm tauri build    # 生产构建
 ```
 
 ### 首次启动
 
-1. 选择你偏好的界面语言
-2. 选择翻译引擎（在线 API 或本地模型）
-3. 选择语音识别引擎（在线或本地 Whisper）
-4. 配置 OSC 设置（默认端口：9000）
-5. 完成！在 VRChat 中开始翻译
+1. 选择界面语言
+2. 定位你的 HY-MT 模型文件 —— 它会被移动到 `~/.vrc-gotrans/models/`
+3. 配置 OSC（默认端口：9000）
+4. 完成！在 VRChat 中开始翻译
+
+> Python sidecar（翻译引擎）首次运行时由 `uv` 自动引导，通过可配置的镜像源下载 Python 3.11 + 依赖。
 
 ## 📖 工作原理
 
 ```
-麦克风输入
+文本输入（语音识别 faster-whisper —— 开发中）
     ↓
-Whisper STT（语音 → 文字）
+HY-MT1.5 / 在线 API（文字 → 译文）   经 Python sidecar
     ↓
-HY-MT1.5 / 在线 API（文字 → 译文）
-    ↓
-OSC 协议 → VRChat 聊天框
+OSC（rosc，Rust）→ VRChat 聊天框
 ```
 
 ## 🛠️ 技术栈
 
 **前端**
-- React 19 + TypeScript 5.8
-- Radix UI Themes 3.3
-- Vite 8.1
-- i18next（多语言支持）
+- React 19 + TypeScript
+- Radix UI Themes + Vite
+- i18next（界面：zh-Hans / en / ja / ko）
 
-**后端**
+**壳**
 - Tauri 2（Rust）
-- llama.cpp（模型推理）
-- Tokio（异步运行时）
 - rosc（OSC 协议）
+- Tokio（异步运行时）
+
+**AI sidecar**（Python，uv 管理，锁定 3.11）
+- llama-cpp-python —— 加载 HY-MT GGUF 做本地翻译
+- faster-whisper —— 语音识别（开发中）
 
 **AI 模型**
-- 翻译：[腾讯 HY-MT1.5-1.8B](https://huggingface.co/tencent/HY-MT1.5-1.8B-GGUF)（1.1GB GGUF）
-- 语音识别：OpenAI Whisper（base 模型，约 150MB）
+- 翻译：[腾讯 HY-MT1.5-1.8B](https://huggingface.co/tencent/HY-MT1.5-1.8B-GGUF)（Q4_K_M，约 1.1GB GGUF）
+- 语音识别：OpenAI Whisper（开发中）
 
 ## 🌍 支持的语言
 
-翻译支持 33+ 种语言，包括：
-- English（英语）
-- 中文
-- 日本語（日语）
-- 한국어（韩语）
-- Français（法语）
-- Deutsch（德语）
-- Español（西班牙语）
-- Русский（俄语）
-- 以及更多……
+翻译支持 38 种语言，包括：
+English、简体中文、繁體中文、日本語、한국어、粵語、Français、Deutsch、Español、Português、Italiano、Русский、Українська、العربية、हिन्दी、ไทย、Tiếng Việt、Bahasa Indonesia……以及更多。
 
 ## 📋 配置
 
-配置文件位置：
-- Windows：`%APPDATA%\VRC-GoTrans\config.json`
-- macOS：`~/Library/Application Support/VRC-GoTrans/config.json`
-- Linux：`~/.config/VRC-GoTrans/config.json`
+所有数据统一在 `~/.vrc-gotrans/`（Windows/macOS/Linux 一致）：
+- `config.json` —— 设置
+- `models/` —— GGUF 模型文件
+- `logs/` —— 应用日志
+- `cache/` —— 运行时缓存
 
 ## 🤝 参与贡献
 
-欢迎贡献！请先阅读我们的[贡献指南](CONTRIBUTING.md)。
-
-### 开发流程
-
-1. Fork 本仓库
-2. 创建特性分支：`git checkout -b feat/your-feature`
-3. 提交更改：`git commit -m "feat: add your feature"`
-4. 推送分支：`git push origin feat/your-feature`
-5. 发起 Pull Request
+欢迎贡献！Fork → 特性分支 → PR。
 
 ### 翻译贡献
 
-帮助我们把界面翻译成更多语言！翻译文件位于 `src/locales/`。
+帮助把界面翻译成更多语言！翻译文件在 `src/locales/`。locale 结构由 `zh-Hans.ts` 派生（`TranslationShape`），缺 key 会让 TypeScript 编译失败，立即发现。
 
 ## 📝 许可证
 
-本项目基于 MIT 许可证开源，详见 [LICENSE](LICENSE) 文件。
+Copyright (C) 2026 ChuranNeko. 本项目基于 [GNU AGPL-3.0-or-later](LICENSE) 许可证开源。
 
 ## 🙏 致谢
 
-- [VRChat OSC 文档](https://docs.vrchat.com/docs/osc-overview)
 - [腾讯 HY-MT1.5](https://huggingface.co/tencent/HY-MT1.5-1.8B-GGUF) —— 翻译模型
-- [OpenAI Whisper](https://github.com/openai/whisper) —— 语音识别
-- [llama.cpp](https://github.com/ggerganov/llama.cpp) —— 快速模型推理
+- [VRChat OSC](https://docs.vrchat.com/docs/osc-overview)
+- [llama.cpp](https://github.com/ggerganov/llama.cpp) —— 模型推理
 - [Tauri](https://tauri.app/) —— 桌面应用框架
+- [uv](https://docs.astral.sh/uv/) —— Python 包管理器
 
 ## 📧 联系方式
 
 - 作者：ChuranNeko
+- 邮箱：churanneko@outlook.com
+- QQ 群：[初然的猫猫头窝](https://qm.qq.com/q/MS6J5wEOOY)
 - 问题反馈：[GitHub Issues](https://github.com/ChuranNeko/VRC-GoTrans/issues)
 
 ---

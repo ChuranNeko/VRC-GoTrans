@@ -1,25 +1,26 @@
 # VRC-GoTrans
 
-**[简体中文](README.zh-CN.md) | [English](README.md) | [日本語](README.ja.md)**
+**[简体中文](README.zh-CN.md) | [English](README.md) | [日本語](README.ja.md) | [한국어](README.ko.md)**
 
 ---
 
 <div align="center">
-  <img src="src/assets/logo.svg" width="128" height="128" alt="VRC-GoTrans Logo">
+  <img src="public/logo.svg" width="128" height="128" alt="VRC-GoTrans Logo">
   <h3>VRChat 向けリアルタイム翻訳アシスタント</h3>
-  <p>即時の音声相互翻訳で、バーチャルリアリティの言語の壁を打ち破る</p>
+  <p>即時翻訳で、バーチャルリアリティの言語の壁を打ち破る</p>
 </div>
 
 ---
 
 ## ✨ 主な機能
 
-- 🎤 **音声認識** —— ローカル Whisper STT によるプライバシー保護型の音声認識
-- 🌐 **多言語翻訳** —— Tencent HY-MT1.5（オフライン）またはオンライン API を利用
-- 💬 **VRChat 連携** —— OSC 経由で翻訳をゲーム内チャットボックスへ直接送信
-- 🔒 **プライバシー重視** —— すべての処理を 100% オフラインで実行可能、データは端末外に出ません
-- ⚡ **低遅延** —— 最適化されたパイプラインでほぼリアルタイムの翻訳
+- 🌐 **多言語翻訳** —— Tencent HY-MT1.5（オフライン、38 言語）またはオンライン API を利用
+- 💬 **VRChat 連携** —— OSC 経由で翻訳をゲーム内チャットボックスへ送信
+- 🔒 **プライバシー重視** —— ローカル翻訳は 100% オフライン、データは端末外に出ません
+- ⚡ **低遅延** —— CPU で 1 件あたり 0.3〜0.5 秒（モデル読み込み約 1.5 秒）
 - 🎨 **モダンな UI** —— React + Radix UI によるシンプルで使いやすいインターフェース
+- 🌍 **多言語 UI** —— 简体中文 / English / 日本語 / 한국어
+- 🚧 **音声認識** —— faster-whisper 統合は開発中
 
 ## 🚀 クイックスタート
 
@@ -38,109 +39,89 @@
 **方法 2：ソースからビルド**
 
 ```bash
-# リポジトリをクローン
 git clone https://github.com/ChuranNeko/VRC-GoTrans.git
 cd VRC-GoTrans
-
-# 依存関係をインストール
 pnpm install
-
-# 開発モードで実行
-pnpm tauri dev
-
-# 本番用ビルド
-pnpm tauri build
+pnpm tauri dev      # 開発モード
+pnpm tauri build    # 本番ビルド
 ```
 
 ### 初回起動
 
-1. 好みの UI 言語を選択
-2. 翻訳エンジンを選択（オンライン API またはローカルモデル）
-3. 音声認識エンジンを選択（オンラインまたはローカル Whisper）
-4. OSC 設定を構成（デフォルトポート：9000）
-5. 完了！VRChat で翻訳を始めましょう
+1. UI 言語を選択
+2. HY-MT モデルファイルを指定 —— `~/.vrc-gotrans/models/` に移動されます
+3. OSC 設定を構成（デフォルトポート：9000）
+4. 完了！VRChat で翻訳を始めましょう
+
+> Python サイドカー（翻訳エンジン）は初回起動時に `uv` で自動セットアップされ、設定可能なミラー経由で Python 3.11 + 依存関係をダウンロードします。
 
 ## 📖 仕組み
 
 ```
-マイク入力
+テキスト入力（音声認識 faster-whisper —— 開発中）
     ↓
-Whisper STT（音声 → テキスト）
+HY-MT1.5 / オンライン API（テキスト → 翻訳）   Python サイドカー経由
     ↓
-HY-MT1.5 / オンライン API（テキスト → 翻訳）
-    ↓
-OSC プロトコル → VRChat チャットボックス
+OSC（rosc、Rust）→ VRChat チャットボックス
 ```
 
 ## 🛠️ 技術スタック
 
 **フロントエンド**
-- React 19 + TypeScript 5.8
-- Radix UI Themes 3.3
-- Vite 8.1
-- i18next（多言語対応）
+- React 19 + TypeScript
+- Radix UI Themes + Vite
+- i18next（UI：zh-Hans / en / ja / ko）
 
-**バックエンド**
+**シェル**
 - Tauri 2（Rust）
-- llama.cpp（モデル推論）
-- Tokio（非同期ランタイム）
 - rosc（OSC プロトコル）
+- Tokio（非同期ランタイム）
+
+**AI サイドカー**（Python、uv 管理、3.11 に固定）
+- llama-cpp-python —— HY-MT GGUF を読み込みローカル翻訳
+- faster-whisper —— 音声認識（開発中）
 
 **AI モデル**
-- 翻訳：[Tencent HY-MT1.5-1.8B](https://huggingface.co/tencent/HY-MT1.5-1.8B-GGUF)（1.1GB GGUF）
-- 音声認識：OpenAI Whisper（base モデル、約 150MB）
+- 翻訳：[Tencent HY-MT1.5-1.8B](https://huggingface.co/tencent/HY-MT1.5-1.8B-GGUF)（Q4_K_M、約 1.1GB GGUF）
+- 音声認識：OpenAI Whisper（開発中）
 
 ## 🌍 対応言語
 
-翻訳は 33 以上の言語に対応、以下を含みます：
-- English（英語）
-- 中文（中国語）
-- 日本語
-- 한국어（韓国語）
-- Français（フランス語）
-- Deutsch（ドイツ語）
-- Español（スペイン語）
-- Русский（ロシア語）
-- その他多数……
+翻訳は 38 言語に対応、以下を含みます：
+English、简体中文、繁體中文、日本語、한국어、粵語、Français、Deutsch、Español、Português、Italiano、Русский、Українська、العربية、हिन्दी、ไทย、Tiếng Việt、Bahasa Indonesia……その他多数。
 
 ## 📋 設定
 
-設定ファイルの場所：
-- Windows：`%APPDATA%\VRC-GoTrans\config.json`
-- macOS：`~/Library/Application Support/VRC-GoTrans/config.json`
-- Linux：`~/.config/VRC-GoTrans/config.json`
+すべてのデータは `~/.vrc-gotrans/` に集約（Windows/macOS/Linux 共通）：
+- `config.json` —— 設定
+- `models/` —— GGUF モデルファイル
+- `logs/` —— アプリケーションログ
+- `cache/` —— ランタイムキャッシュ
 
 ## 🤝 コントリビュート
 
-コントリビュートを歓迎します！まず[コントリビューションガイドライン](CONTRIBUTING.md)をお読みください。
-
-### 開発の流れ
-
-1. リポジトリを Fork
-2. 機能ブランチを作成：`git checkout -b feat/your-feature`
-3. 変更をコミット：`git commit -m "feat: add your feature"`
-4. ブランチにプッシュ：`git push origin feat/your-feature`
-5. Pull Request を作成
+コントリビュートを歓迎します！Fork → 機能ブランチ → PR。
 
 ### 翻訳への貢献
 
-UI をより多くの言語へ翻訳する手助けをしてください！翻訳ファイルは `src/locales/` にあります。
+UI をより多くの言語へ翻訳する手助けをしてください！翻訳ファイルは `src/locales/` にあります。locale 構造は `zh-Hans.ts` から派生（`TranslationShape`）しており、キー不足は TypeScript ビルドで即座に検出されます。
 
 ## 📝 ライセンス
 
-本プロジェクトは MIT ライセンスの下で公開されています。詳細は [LICENSE](LICENSE) ファイルを参照してください。
+Copyright (C) 2026 ChuranNeko. 本プロジェクトは [GNU AGPL-3.0-or-later](LICENSE) の下で公開されています。
 
 ## 🙏 謝辞
 
-- [VRChat OSC ドキュメント](https://docs.vrchat.com/docs/osc-overview)
 - [Tencent HY-MT1.5](https://huggingface.co/tencent/HY-MT1.5-1.8B-GGUF) —— 翻訳モデル
-- [OpenAI Whisper](https://github.com/openai/whisper) —— 音声認識
-- [llama.cpp](https://github.com/ggerganov/llama.cpp) —— 高速モデル推論
+- [VRChat OSC](https://docs.vrchat.com/docs/osc-overview)
+- [llama.cpp](https://github.com/ggerganov/llama.cpp) —— モデル推論
 - [Tauri](https://tauri.app/) —— デスクトップアプリフレームワーク
+- [uv](https://docs.astral.sh/uv/) —— Python パッケージマネージャー
 
 ## 📧 連絡先
 
 - 作者：ChuranNeko
+- メール：churanneko@outlook.com
 - 問題報告：[GitHub Issues](https://github.com/ChuranNeko/VRC-GoTrans/issues)
 
 ---

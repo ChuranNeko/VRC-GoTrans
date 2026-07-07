@@ -1,150 +1,131 @@
 # VRC-GoTrans
 
-**[简体中文](README.zh-CN.md) | [English](README.md) | [日本語](README.ja.md)**
+**[简体中文](README.zh-CN.md) | [English](README.md) | [日本語](README.ja.md) | [한국어](README.ko.md)**
 
 ---
 
 <div align="center">
-  <img src="src/assets/logo.svg" width="128" height="128" alt="VRC-GoTrans Logo">
-  <h3>Real-time Translation Assistant for VRChat</h3>
-  <p>Break language barriers in virtual reality with instant voice-to-voice translation</p>
+  <img src="public/logo.svg" width="128" height="128" alt="VRC-GoTrans Logo">
+  <h3>Real-time translation assistant for VRChat</h3>
+  <p>Break language barriers in VR with instant translation</p>
 </div>
 
 ---
 
 ## ✨ Features
 
-- 🎤 **Voice Recognition** — Local Whisper STT for privacy-preserving speech-to-text
-- 🌐 **Multi-language Translation** — Powered by Tencent HY-MT1.5 (offline) or online APIs
-- 💬 **VRChat Integration** — Send translations directly to in-game chatbox via OSC
-- 🔒 **Privacy First** — All processing can run 100% offline, no data leaves your machine
-- ⚡ **Low Latency** — Optimized pipeline for near-real-time translation
-- 🎨 **Modern UI** — Clean, accessible interface built with React + Radix UI
+- 🌐 **Multi-language translation** — Powered by Tencent HY-MT1.5 (offline, 38 languages) or online APIs
+- 💬 **VRChat integration** — Send translations to the in-game chatbox via OSC
+- 🔒 **Privacy-first** — Local translation runs 100% offline; data never leaves your machine
+- ⚡ **Low latency** — ~0.3-0.5s per translation on CPU (after ~1.5s model load)
+- 🎨 **Modern UI** — Clean interface built with React + Radix UI
+- 🌍 **Multilingual interface** — UI in 简体中文 / English / 日本語 / 한국어
+- 🚧 **Speech recognition** — faster-whisper integration planned
 
 ## 🚀 Quick Start
 
-### Prerequisites
+### Requirements
 
-- Windows 10/11 (macOS/Linux support planned)
+- Windows 10/11 (macOS/Linux planned)
 - 4GB+ RAM
-- ~2GB disk space for models
+- ~2GB disk space for the model
 
-### Installation
+### Install
 
-**Option 1: Download Release (Recommended)**
+**Option 1: Download a release (recommended)**
 
-Download the latest installer from [Releases](https://github.com/ChuranNeko/VRC-GoTrans/releases).
+Grab the latest installer from [Releases](https://github.com/ChuranNeko/VRC-GoTrans/releases).
 
-**Option 2: Build from Source**
+**Option 2: Build from source**
 
 ```bash
-# Clone repository
 git clone https://github.com/ChuranNeko/VRC-GoTrans.git
 cd VRC-GoTrans
-
-# Install dependencies
 pnpm install
-
-# Run in development mode
-pnpm tauri dev
-
-# Build for production
-pnpm tauri build
+pnpm tauri dev      # development
+pnpm tauri build    # production
 ```
 
-### First Launch
+### First run
 
-1. Select your preferred UI language
-2. Choose translation engine (online API or local model)
-3. Choose speech recognition engine (online or local Whisper)
-4. Configure OSC settings (default port: 9000)
-5. Done! Start translating in VRChat
+1. Pick your interface language
+2. Point the app to your HY-MT model file — it gets moved to `~/.vrc-gotrans/models/`
+3. Configure OSC (default port: 9000)
+4. Done — start translating in VRChat
 
-## 📖 How It Works
+> The Python sidecar (translation engine) is auto-bootstrapped on first run via `uv`, downloading Python 3.11 + dependencies through configurable mirrors.
+
+## 📖 How it works
 
 ```
-Microphone Input
+Text input  (speech recognition via faster-whisper — planned)
     ↓
-Whisper STT (Voice → Text)
+HY-MT1.5 / online API  (text → translation)   via Python sidecar
     ↓
-HY-MT1.5 / Online API (Text → Translation)
-    ↓
-OSC Protocol → VRChat Chatbox
+OSC (rosc, Rust) → VRChat chatbox
 ```
 
-## 🛠️ Tech Stack
+## 🛠️ Tech stack
 
 **Frontend**
-- React 19 + TypeScript 5.8
-- Radix UI Themes 3.3
-- Vite 8.1
-- i18next (multi-language support)
+- React 19 + TypeScript
+- Radix UI Themes + Vite
+- i18next (UI: zh-Hans / en / ja / ko)
 
-**Backend**
+**Shell**
 - Tauri 2 (Rust)
-- llama.cpp (model inference)
-- Tokio (async runtime)
 - rosc (OSC protocol)
+- Tokio (async runtime)
 
-**AI Models**
-- Translation: [Tencent HY-MT1.5-1.8B](https://huggingface.co/tencent/HY-MT1.5-1.8B-GGUF) (1.1GB GGUF)
-- STT: OpenAI Whisper (base model, ~150MB)
+**AI sidecar** (Python, managed by uv, pinned to 3.11)
+- llama-cpp-python — loads HY-MT GGUF for local translation
+- faster-whisper — speech recognition (planned)
 
-## 🌍 Supported Languages
+**AI models**
+- Translation: [Tencent HY-MT1.5-1.8B](https://huggingface.co/tencent/HY-MT1.5-1.8B-GGUF) (Q4_K_M, ~1.1GB GGUF)
+- Speech recognition: OpenAI Whisper (planned)
 
-Translation supports 33+ languages including:
-- English
-- 中文 (Chinese)
-- 日本語 (Japanese)
-- 한국어 (Korean)
-- Français (French)
-- Deutsch (German)
-- Español (Spanish)
-- Русский (Russian)
-- And more...
+## 🌍 Supported languages
+
+Translation supports 38 languages, including:
+English, 简体中文, 繁體中文, 日本語, 한국어, 粵語, Français, Deutsch, Español, Português, Italiano, Русский, Українська, العربية, हिन्दी, ไทย, Tiếng Việt, Bahasa Indonesia, …and more.
 
 ## 📋 Configuration
 
-Configuration file location:
-- Windows: `%APPDATA%\VRC-GoTrans\config.json`
-- macOS: `~/Library/Application Support/VRC-GoTrans/config.json`
-- Linux: `~/.config/VRC-GoTrans/config.json`
+All data lives in one place — `~/.vrc-gotrans/` (Windows/macOS/Linux alike):
+- `config.json` — settings
+- `models/` — GGUF model files
+- `logs/` — application logs
+- `cache/` — runtime cache
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) first.
+Contributions welcome! Fork → feature branch → PR.
 
-### Development Setup
+### Translation contributions
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feat/your-feature`
-3. Commit your changes: `git commit -m "feat: add your feature"`
-4. Push to the branch: `git push origin feat/your-feature`
-5. Open a Pull Request
-
-### Translation Contributions
-
-Help us translate the UI to more languages! Translation files are located in `src/locales/`.
+Help translate the UI into more languages! Translation files live in `src/locales/`. The locale shape is derived from `zh-Hans.ts` (`TranslationShape`) — missing keys fail the TypeScript build, so you'll know immediately if something's off.
 
 ## 📝 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Copyright (C) 2026 ChuranNeko. Licensed under the [GNU AGPL-3.0-or-later](LICENSE).
 
-## 🙏 Acknowledgments
+## 🙏 Acknowledgements
 
-- [VRChat OSC Documentation](https://docs.vrchat.com/docs/osc-overview)
-- [Tencent HY-MT1.5](https://huggingface.co/tencent/HY-MT1.5-1.8B-GGUF) — Translation model
-- [OpenAI Whisper](https://github.com/openai/whisper) — Speech recognition
-- [llama.cpp](https://github.com/ggerganov/llama.cpp) — Fast model inference
-- [Tauri](https://tauri.app/) — Desktop app framework
+- [Tencent HY-MT1.5](https://huggingface.co/tencent/HY-MT1.5-1.8B-GGUF) — translation model
+- [VRChat OSC](https://docs.vrchat.com/docs/osc-overview)
+- [llama.cpp](https://github.com/ggerganov/llama.cpp) — model inference
+- [Tauri](https://tauri.app/) — desktop app framework
+- [uv](https://docs.astral.sh/uv/) — Python package manager
 
 ## 📧 Contact
 
 - Author: ChuranNeko
+- Email: churanneko@outlook.com
 - Issues: [GitHub Issues](https://github.com/ChuranNeko/VRC-GoTrans/issues)
 
 ---
 
 <div align="center">
-  Made with ❤️ for the VRChat community
+  Built with ❤️ for the VRChat community
 </div>
