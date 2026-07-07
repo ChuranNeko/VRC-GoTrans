@@ -1,7 +1,7 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
-import { resources, DEFAULT_LANGUAGE } from "./locales";
+import { resources, DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES } from "./locales";
 
 i18n
   .use(LanguageDetector)
@@ -9,7 +9,7 @@ i18n
   .init({
     resources,
     fallbackLng: DEFAULT_LANGUAGE,
-    supportedLngs: ["zh-Hans", "en", "ja"],
+    supportedLngs: SUPPORTED_LANGUAGES.map((l) => l.code),
     interpolation: {
       escapeValue: false,
     },

@@ -61,7 +61,7 @@ export function TranslatePage() {
     setError("");
     setInitializing(true);
     try {
-      await invoke("init_translator");
+      await invoke("bootstrap_sidecar");
       if (sendToVrc) {
         try {
           await oscService.init();
@@ -91,7 +91,7 @@ export function TranslatePage() {
     ]);
 
     try {
-      const translation = await invoke<string>("translate_text", {
+      const translation = await invoke<string>("translate_via_sidecar", {
         text,
         targetLang,
       });

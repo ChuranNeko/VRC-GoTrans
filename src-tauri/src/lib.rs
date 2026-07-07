@@ -33,6 +33,12 @@ async fn bootstrap_sidecar(
     app: AppHandle,
     state: State<'_, SidecarState>,
 ) -> Result<String, String> {
+    {
+        let guard = state.0.lock().unwrap();
+        if let Some(h) = guard.as_ref() {
+            return Ok(h.base_url.clone());
+        }
+    }
     let handle = sidecar::bootstrap_and_start(&app)
         .await
         .map_err(|e| e.to_string())?;

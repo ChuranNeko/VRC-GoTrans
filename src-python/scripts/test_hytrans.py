@@ -8,10 +8,11 @@ from __future__ import annotations
 
 import sys
 import time
+from pathlib import Path
 
 from llama_cpp import Llama
 
-MODEL = r"D:\Projects\ChuranNeko\VRC-GoTrans\models\HY-MT1.5-1.8B-Q4_K_M.gguf"
+MODEL = str(Path.home() / ".vrc-gotrans" / "models" / "HY-MT1.5-1.8B-Q4_K_M.gguf")
 
 
 def has_cjk(s: str) -> bool:
@@ -47,12 +48,14 @@ def main() -> int:
     )
 
     cases = [
-        ("Hello, how are you today?", "Chinese"),
-        ("Hello, how are you today?", "Japanese"),
-        ("你好，今天天气真好", "English"),
-        ("こんにちは、世界", "English"),
-        ("Thank you very much", "Chinese"),
-        ("VRChat is really fun", "Japanese"),
+        ("你好，很高兴认识你", "Korean"),
+        ("Hello, nice to meet you", "Korean"),
+        ("안녕하세요, 만나서 반갑습니다", "Chinese"),
+        ("안녕하세요, 만나서 반갑습니다", "English"),
+        ("감사합니다, 정말 도와주셔서 고마워요", "Chinese"),
+        ("VRChat에서 같이 놀아요", "English"),
+        ("Where is the bathroom?", "Korean"),
+        ("오늘 날씨가 정말 좋네요", "English"),
     ]
 
     for text, target in cases:
