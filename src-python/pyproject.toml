@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "VRC-GoTrans Python sidecar: AI translation & transcription backend"
 readme = "README.md"
 requires-python = ">=3.11,<3.13"
-license = { text = "MIT" }
+license = { text = "AGPL-3.0-or-later" }
 authors = [{ name = "ChuranNeko" }]
 dependencies = [
     "aiohttp>=3.10,<4",
