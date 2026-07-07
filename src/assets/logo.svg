@@ -1,0 +1,43 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="VRC-GoTrans logo">
+  <defs>
+    <linearGradient id="vgtBg" x1="0" y1="0" x2="256" y2="256" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#6D5EF7"/>
+      <stop offset="1" stop-color="#2CB8F0"/>
+    </linearGradient>
+    <linearGradient id="vgtArrow" x1="64" y1="128" x2="192" y2="128" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#E8F4FF"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 圆角方形底：品牌主色渐变 -->
+  <rect x="8" y="8" width="240" height="240" rx="56" fill="url(#vgtBg)"/>
+
+  <!-- 左侧对话气泡（源语言） -->
+  <path d="M56 74
+           h72 a20 20 0 0 1 20 20
+           v34 a20 20 0 0 1 -20 20
+           h-40 l-22 20 v-20 h-10
+           a20 20 0 0 1 -20 -20
+           v-34 a20 20 0 0 1 20 -20 z"
+        fill="#FFFFFF" fill-opacity="0.18"/>
+
+  <!-- 右侧对话气泡（目标语言），与左侧镜像交叠 -->
+  <path d="M200 108
+           h-72 a20 20 0 0 0 -20 20
+           v34 a20 20 0 0 0 20 20
+           h40 l22 20 v-20 h10
+           a20 20 0 0 0 20 -20
+           v-34 a20 20 0 0 0 -20 -20 z"
+        fill="#FFFFFF" fill-opacity="0.30"/>
+
+  <!-- 双向翻译箭头：横贯中心，象征实时互译 -->
+  <g stroke="url(#vgtArrow)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <!-- 上行：向右 -->
+    <path d="M78 112 h84"/>
+    <path d="M150 98 l16 14 -16 14"/>
+    <!-- 下行：向左 -->
+    <path d="M178 144 h-84"/>
+    <path d="M106 130 l-16 14 16 14"/>
+  </g>
+</svg>
